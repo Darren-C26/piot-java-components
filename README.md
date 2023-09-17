@@ -31,3 +31,7 @@ Test Execution Samples:
 The integration tests for the GDA are listed below.
  - GatewayDeviceAppTest
  - SystemPerformanceManagerTest
+
+Text Execution Sample:
+![GatewayDeviceAppTest](image.png)
+![SystemPerformanceManagerTest](image-1.png)
