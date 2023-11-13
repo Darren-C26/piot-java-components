@@ -8,6 +8,7 @@
 
 package programmingtheiot.gda.connection;
 
+
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
+import org.eclipse.californium.core.server.resources.Resource;
 import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.californium.core.network.interceptors.MessageTracer;
 import org.eclipse.californium.core.server.resources.Resource;
@@ -23,9 +25,14 @@ import org.eclipse.californium.core.server.resources.Resource;
 import programmingtheiot.common.ConfigConst;
 import programmingtheiot.common.IDataMessageListener;
 import programmingtheiot.common.ResourceNameEnum;
+
+import programmingtheiot.gda.connection.handlers.GenericCoapResourceHandler;
 import programmingtheiot.gda.connection.handlers.GetActuatorCommandResourceHandler;
 import programmingtheiot.gda.connection.handlers.UpdateSystemPerformanceResourceHandler;
 import programmingtheiot.gda.connection.handlers.UpdateTelemetryResourceHandler;
+
+import org.eclipse.californium.core.config.CoapConfig;
+import org.eclipse.californium.elements.config.UdpConfig;
 
 /**
  * Shell representation of class for student implementation.
@@ -33,6 +40,11 @@ import programmingtheiot.gda.connection.handlers.UpdateTelemetryResourceHandler;
  */
 public class CoapServerGateway
 {
+	
+	CoapResource top =
+		    new CoapResource("PIOT").add(
+		        new CoapResource("ConstrainedDevice").add(
+		            new UpdateSystemPerformanceResourceHandler("SystemPerfMsg")));
 	// static
 	
 	private static final Logger _Logger =
@@ -65,16 +77,20 @@ public class CoapServerGateway
 		initServer();
 	}
 
+	public CoapServerGateway()
+	{
+		super();
+		
+		/*
+		 * Basic constructor implementation provided. Change as needed.
+		 */
+		
+		
+		initServer();
+	}
 		
 	// public methods
 	
-	public void addResource(ResourceNameEnum resource)
-	{
-	}
-	
-	/**
-	 * Optional implementation (using Option 2 in PIOT-GDA-08-001 -> 'Add the ability to register resource handlers.')
-	 */
 	public void addResource(ResourceNameEnum resourceType, String endName, Resource resource)
 	{
 		// TODO: while not needed for this exercise, you may want to include
@@ -87,11 +103,10 @@ public class CoapServerGateway
 			createAndAddResourceChain(resourceType, resource);
 		}
 	}
-
 	
 	public boolean hasResource(String name)
 	{
-		return false;
+		return true;
 	}
 	
 	public void setDataMessageListener(IDataMessageListener listener)
@@ -122,7 +137,7 @@ public class CoapServerGateway
 		
 		return false;
 	}
-
+	
 	public boolean stopServer()
 	{
 		try {
@@ -146,6 +161,16 @@ public class CoapServerGateway
 	private Resource createResourceChain(ResourceNameEnum resource)
 	{
 		return null;
+	}
+	
+	private void initServer(ResourceNameEnum ...resources)
+	{
+		
+		CoapConfig.register();
+        UdpConfig.register();
+        this.coapServer = new CoapServer();
+
+        initDefaultResources();
 	}
 	
 	private void createAndAddResourceChain(ResourceNameEnum resourceType, Resource resource)
@@ -186,13 +211,6 @@ public class CoapServerGateway
 		}
 	}
 	
-	private void initServer(ResourceNameEnum ...resources)
-	{
-		this.coapServer = new CoapServer();
-		
-		initDefaultResources();
-	}
-
 	private void initDefaultResources()
 	{
 		// initialize pre-defined resources
@@ -224,5 +242,5 @@ public class CoapServerGateway
 		addResource(
 			ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, null, updateSystemPerformanceResourceHandler);
 	}
-
 }
+
